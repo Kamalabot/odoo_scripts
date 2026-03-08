@@ -39,18 +39,16 @@ An External ID is an arbitrary, unique string you assign to a row.
 
 A Purchase Order is a header (`purchase.order`) that has many lines (`purchase.order.line`). In Odoo, the relationship field from the order to the lines is called `order_line`.
 
-To import an Order and its Lines at the same time, you use a single Excel file where the first row contains the Order header info, and subsequent rows belong to the same order. 
+**Crucial Logic for Multi-Line Documents:** To group multiple items under one parent document, you **must repeat the header context** on every line. This includes the parent `id`, the related `partner_id/id`, and structural fields like `date_order`. If you omit them, Odoo's engine will throw a "Missing required value for field X" error because it loses track of the parent context.
 
 **Model to Target:** `purchase.order`
 
 **Excel Example:**
-| id | partner_id/id | date_order | order_line/product_id/id | order_line/product_qty | order_line/price_unit |
+| id | partner_id/id | date_order | order_line/name | order_line/product_qty | order_line/price_unit |
 |---|---|---|---|---|---|
-| PO_001 | vendor_acme | 2026-03-08 | prod_widget_a | 10 | 15.50 |
-|        |             |            | prod_widget_b | 5  | 42.00 |
-| PO_002 | vendor_beta | 2026-03-09 | prod_widget_c | 100 | 1.25 |
-
-*Notice how row 2 leaves `id` and `partner_id/id` blank? Odoo's `load` API understands that this row is just another `order_line` belonging to `PO_001`.*
+| PO_001 | vendor_acme | 2026-03-08 | Office Desk | 10 | 15.50 |
+| PO_001 | vendor_acme | 2026-03-08 | Ergonomic Chair | 5  | 42.00 |
+| PO_002 | vendor_beta | 2026-03-09 | 4K Monitor | 100 | 1.25 |
 
 ---
 
@@ -63,11 +61,11 @@ An Invoice has the exact same header/line structure, but the model is different.
 **Model to Target:** `account.move`
 
 **Excel Example:**
-| id | move_type | partner_id/id | invoice_date | invoice_line_ids/product_id/id | invoice_line_ids/quantity | invoice_line_ids/price_unit |
+| id | move_type | partner_id/id | invoice_date | invoice_line_ids/name | invoice_line_ids/quantity | invoice_line_ids/price_unit |
 |---|---|---|---|---|---|---|
-| INV_001 | out_invoice | cust_alice | 2026-03-08 | prod_widget_a | 2 | 20.00 |
-|         |             |            |            | prod_widget_b | 1 | 50.00 |
-| INV_002 | in_invoice  | vendor_acme| 2026-03-08 | prod_widget_c | 50| 1.00  |
+| INV_001 | out_invoice | cust_alice | 2026-03-08 | Consulting | 2 | 20.00 |
+| INV_001 | out_invoice | cust_alice | 2026-03-08 | License    | 1 | 50.00 |
+| INV_002 | in_invoice  | vendor_acme| 2026-03-10 | Hosting    | 50| 1.00  |
 
 *(Note: `out_invoice` is a Customer Invoice, `in_invoice` is a Vendor Bill).*
 
@@ -86,6 +84,87 @@ Contacts can be nested! A company can have employees linked under it.
 | comp_stark | Stark Industries | TRUE | info@stark.com | |
 | emp_tony | Tony Stark | FALSE | tony@stark.com | comp_stark |
 | emp_pepper | Pepper Potts | FALSE | pepper@stark.com | comp_stark |
+
+---
+
+## 6. Hydrating Products & Inventory (`product.template`)
+
+Products are typically created at the template level which automatically generates the variant (`product.product`).
+
+**Important Note:** In newer Odoo versions, the `type` field value `product` was deprecated. Ensure you use `consu` (Consumable) or `service`.
+
+**Model to Target:** `product.template`
+
+**Excel Example:**
+| id | name | type | list_price | standard_price | barcode |
+|---|---|---|---|---|---|
+| prod_desk | Office Desk | consu | 199.99 | 80.00 | 123456789 |
+| prod_chair | Ergonomic Chair | consu | 149.99 | 60.00 | 987654321 |
+
+---
+
+## 7. Hydrating Employees & HR (`hr.employee`)
+
+**Common Error:** `Cannot create Many-To-One records indirectly`.
+If you map to textual relations like `department_id/name` on an *empty* database, Odoo throws this exception. To prevent this during mock data scaffolding, map to simple text fields (like `job_title` instead of `job_id/name`) or ensure the parent lookup exists prior.
+
+**Model to Target:** `hr.employee`
+
+**Excel Example:**
+| id | name | work_email | job_title |
+|---|---|---|---|
+| hr_alice | Alice Smith | alice@ourcompany.com | Sales Director |
+| hr_bob | Bob Jones | bob@ourcompany.com | Senior Developer |
+
+---
+
+## 8. Hydrating Sales Orders & Quotations (`sale.order`)
+
+Sales orders are structured exactly like Purchase Orders. A header `sale.order` with an `order_line` relationship pointing to `sale.order.line`.
+
+**Bug Resolved:** `Invalid external ID: expected model 'product.product', found 'product.template'`
+When hydrating SO lines, Odoo demands the `product.product` variant natively. But our imported templates are `product.template`.
+- **RCA/Logic**: Odoo automatically converts templates to variants upon creation. Thus, instead of providing `order_line/product_id/id` (which strictly expects a variant External ID), we provide `order_line/product_template_id/id`. This directs Odoo to lookup the parent template, and implicitly fetch the hidden variant under it! We also found that `order_line/name` is fiercely required for Sales lines.
+
+**Model to Target:** `sale.order`
+
+**Excel Example:**
+| id | partner_id/id | date_order | order_line/product_template_id/id | order_line/name | order_line/product_uom_qty | order_line/price_unit |
+|---|---|---|---|---|---|---|
+| SO_001 | cust_alice | 2026-03-12 | prod_desk | Office Desk | 5 | 200.00 |
+| SO_001 | cust_alice | 2026-03-12 | prod_chair | Ergonomic Chair | 5 | 150.00 |
+
+---
+
+## 9. Hydrating CRM Leads & Opportunities (`crm.lead`)
+
+CRM data uses a single model for both raw Leads and qualified Opportunities, driven by the `type` field.
+
+**Model to Target:** `crm.lead`
+
+**Excel Example:**
+| id | name | expected_revenue | probability | partner_id/id | type |
+|---|---|---|---|---|---|
+| crm_1 | Need 50 Desks | 10000.00 | 80 | cust_alice | opportunity |
+| crm_2 | Interested in App | 0.00 | 10 | | lead |
+
+---
+
+## 10. Hydrating Manufacturing Orders (`mrp.production`)
+
+A Manufacturing order dictates what product to build, how many, and by when. 
+
+**Bug Resolved:** `Invalid field name 'date_format'` and `Missing required value for the field 'Product' (product_id)`
+- **`date_format`**: The internal field is actually `date_start`. 
+- **MRP Variant Resolution**: We wrote `check_product_variants.py` to query `ir.model.data` via XML-RPC. We proved that Odoo does *not* auto-assign an External ID (`__import__.product_...`) to auto-created `product.product` variants! Therefore, mapping via `product_id/id` OR `product_id/product_tmpl_id/id` fails miserably.
+- **RCA/Logic Fix**: The only reliable way to map variants to MRP lines on an empty database is to abandon the `/id` suffix completely and do a literal Display Name match (`product_id`).
+
+**Model to Target:** `mrp.production`
+
+**Excel Example:**
+| id | product_id | product_qty | date_start |
+|---|---|---|---|
+| MO_001 | Office Desk | 10 | 2026-03-15 |
 
 ---
 
