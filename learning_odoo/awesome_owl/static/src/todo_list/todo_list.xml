@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="awesome_owl.TodoList">
+        <div class="d-inline-block border p-2 m-2">
+            <input class="form-control mb-3" type="text" placeholder="Add a todo" t-on-keyup="addTodo" t-ref="input"/>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="activeOnly" t-model="state.isFilterActive"/>
+                <label class="form-check-label" for="activeOnly">Show active only</label>
+            </div>
+            <t t-foreach="filteredTodos" t-as="todo" t-key="todo.id">
+                <TodoItem todo="todo"/>
+            </t>
+        </div>
+    </t>
+</templates>

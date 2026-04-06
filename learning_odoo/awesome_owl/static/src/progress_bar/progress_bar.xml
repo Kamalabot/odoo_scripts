@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="awesome_owl.ProgressBar">
+        <div class="progress m-2" style="height: 20px;">
+            <div class="progress-bar" role="progressbar"
+                t-att-style="'width: ' + props.value + '%;'"
+                t-att-aria-valuenow="props.value"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                t-attf-class="bg-{{props.color || 'primary'}}">
+                <t t-esc="props.value + '%'"/>
+            </div>
+        </div>
+    </t>
+</templates>

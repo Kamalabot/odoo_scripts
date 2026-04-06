@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="awesome_owl.Counter">
+        <div class="m-2 p-2 border d-inline-block">
+            <div class="mb-2">Local: <t t-esc="state.value"/></div>
+            <div class="mb-2">Shared: <t t-esc="sharedState.value"/></div>
+            <button class="btn btn-primary" t-on-click="increment">Increment</button>
+        </div>
+    </t>
+</templates>

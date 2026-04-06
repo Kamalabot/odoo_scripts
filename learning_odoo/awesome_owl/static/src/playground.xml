@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="awesome_owl.playground">
+        <div class="p-3">
+            hello world
+            <div class="row">
+                <div class="col-6">
+                    <h5>Counters (Step: 1)</h5>
+                    <Counter onChange.bind="incrementSum" />
+                    <Counter onChange.bind="incrementSum" />
+                    <div>The sum is: <t t-esc="sum.value"/></div>
+                </div>
+                <div class="col-6">
+                    <h5>Counter (Step: 2)</h5>
+                    <Counter step="2" onChange.bind="incrementSum" />
+                </div>
+            </div>
+            
+            <hr/>
+            
+            <div class="row">
+                <div class="col-4">
+                    <Card title="'Card with footer'">
+                        This card has a footer!
+                        <t t-set-slot="footer">
+                            <button class="btn btn-sm btn-outline-secondary">Footer Action</button>
+                        </t>
+                    </Card>
+                </div>
+                <div class="col-4">
+                    <Card title="'Card 2'">
+                        <Counter />
+                    </Card>
+                </div>
+                <div class="col-4">
+                    <h5>Progress Bars</h5>
+                    <ProgressBar value="10" color="'success'"/>
+                    <ProgressBar value="sharedStateValue" color="'info'"/>
+                    <ProgressBar value="50" color="'danger'"/>
+                </div>
+            </div>
+            
+            <hr/>
+            
+            <TodoList />
+        </div>
+    </t>
+
+</templates>
