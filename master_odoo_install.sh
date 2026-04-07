@@ -87,6 +87,8 @@ sed -i 's/gevent==/gevent>=/g' requirements.txt
 pip install -r requirements.txt
 
 # 9. Generate Dedicated Configuration File
+# After first DB creation, ensure you pin the db below
+# db_name = pindb
 echo "📝 Generating odoo.conf..."
 cat <<EOF > $ODOO_HOME/odoo.conf
 [options]
@@ -99,6 +101,8 @@ addons_path = addons,odoo/addons
 proxy_mode = False
 limit_time_cpu = 600
 limit_time_real = 1200
+workers = 0
+max_cron_threads = 0
 EOF
 
 sudo chown $RUNNER:$RUNNER $ODOO_HOME/odoo.conf
