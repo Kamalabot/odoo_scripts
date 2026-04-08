@@ -5,6 +5,7 @@ class EnergyReading(models.Model):
     _name = "energy.reading"
     _description = "Energy Reading"
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = "reading_date desc, id desc"
 
     meter_id = fields.Many2one("energy.meter", string="Meter", required=True, tracking=True)
     reading_date = fields.Date(string="Reading Date", required=True, default=fields.Date.context_today, tracking=True)
@@ -18,6 +19,7 @@ class EnergyReading(models.Model):
     
     notes = fields.Text(string="Notes", tracking=True)
     month = fields.Char(string="Month", compute="_compute_month", store=True)
+    month_start = fields.Date(string="Month Start", compute="_compute_month", store=True, group_operator=False)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
@@ -29,19 +31,26 @@ class EnergyReading(models.Model):
         for record in self:
             if record.reading_date:
                 record.month = record.reading_date.strftime("%B %Y")
+                record.month_start = record.reading_date.replace(day=1)
             else:
                 record.month = False
+                record.month_start = False
 
     @api.depends('meter_value', 'meter_id', 'reading_date')
     def _compute_consumption(self):
         for record in self:
             if record.meter_id and record.reading_date:
                 # Find the previous reading for the same meter before this date
-                previous = self.env['energy.reading'].search([
+                exclude_id = record._origin.id or (record.id if not isinstance(record.id, models.NewId) else False)
+                domain = [
                     ('meter_id', '=', record.meter_id.id),
                     ('reading_date', '<', record.reading_date),
-                    ('id', '!=', record._origin.id if record._origin.id else getattr(record, 'id', False))
-                ], order='reading_date desc, id desc', limit=1)
+                ]
+                if exclude_id:
+                    domain.append(('id', '!=', exclude_id))
+                previous = self.env['energy.reading'].search(
+                    domain, order='reading_date desc, id desc', limit=1
+                )
                 
                 record.previous_value = previous.meter_value if previous else 0.0
                 record.consumption = record.meter_value - record.previous_value

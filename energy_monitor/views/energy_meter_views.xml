@@ -41,6 +41,23 @@
                             <field name="active" widget="boolean_toggle"/>
                         </group>
                     </group>
+                    <notebook>
+                        <page string="Readings" name="readings_page">
+                            <field name="reading_ids" readonly="1">
+                                <tree>
+                                    <field name="reading_date"/>
+                                    <field name="meter_value"/>
+                                    <field name="consumption"/>
+                                    <field name="cost" widget="monetary"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="state" widget="badge"
+                                        decoration-info="state == 'draft'"
+                                        decoration-success="state == 'confirmed'"
+                                        decoration-warning="state == 'disputed'"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>

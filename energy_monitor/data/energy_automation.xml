@@ -10,7 +10,6 @@
                 if record.cost > record.meter_id.monthly_budget and record.meter_id.monthly_budget > 0:
                     # Log a next activity on the meter
                     env['mail.activity'].create({
-                        'res_name': record.meter_id.name,
                         'res_model_id': env['ir.model']._get('energy.meter').id,
                         'res_id': record.meter_id.id,
                         'summary': 'Budget Exceeded Alert',

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Smart Energy & Utility Monitor',
-    'version': '1.0',
+    'version': '17.0.1.0.0',
     'summary': 'Track utility consumption and costs per department',
     'description': """
         Smart Energy & Utility Monitor
