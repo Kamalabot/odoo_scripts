@@ -20,6 +20,7 @@
         'data/okr_cron.xml',
         'views/okr_period_views.xml',
         'views/okr_objective_views.xml',
+        'views/okr_analysis_views.xml',
         'views/okr_menus.xml',
     ],
     'application': True,

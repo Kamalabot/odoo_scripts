@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- =====================================================================
+             SEARCH VIEW
+             Controls the search bar, pre-built filter buttons, and Group By options.
+             This view is NOT listed explicitly in view_mode — Odoo picks it up
+             automatically as the single search view for the model.
+        ===================================================================== -->
+        <record id="okr_objective_view_search" model="ir.ui.view">
+            <field name="name">okrmetrics.objective.search</field>
+            <field name="model">okrmetrics.objective</field>
+            <field name="arch" type="xml">
+                <search string="Search Objectives">
+                    <!-- Searchable fields: user types in the search bar -->
+                    <field name="name"/>
+                    <field name="owner_id" string="Owner"/>
+                    <field name="team_id" string="Team"/>
+                    <field name="period_id" string="Period"/>
+
+                    <separator/>
+
+                    <!-- Pre-built one-click filter buttons -->
+                    <filter string="My Objectives"
+                            name="my_objectives"
+                            domain="[('owner_id', '=', uid)]"/>
+                    <filter string="Active"
+                            name="active_objectives"
+                            domain="[('state', '=', 'active')]"/>
+                    <filter string="Completed"
+                            name="completed"
+                            domain="[('state', '=', 'completed')]"/>
+                    <filter string="This Period"
+                            name="this_period"
+                            domain="[('period_id.state', '=', 'active')]"/>
+
+                    <separator/>
+
+                    <!-- Group By choices — changes how tree/kanban records are bucketed -->
+                    <group expand="0" string="Group By">
+                        <filter string="Period"
+                                name="group_by_period"
+                                context="{'group_by': 'period_id'}"/>
+                        <filter string="Team"
+                                name="group_by_team"
+                                context="{'group_by': 'team_id'}"/>
+                        <filter string="Owner"
+                                name="group_by_owner"
+                                context="{'group_by': 'owner_id'}"/>
+                        <filter string="Level"
+                                name="group_by_level"
+                                context="{'group_by': 'level'}"/>
+                        <filter string="Status"
+                                name="group_by_state"
+                                context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- =====================================================================
+             GRAPH VIEW — Bar/Line/Pie chart
+             Odoo renders this as an interactive chart using Chart.js.
+             type="bar" | "line" | "pie"   (user can toggle in UI)
+             field @type:
+               "col"     → X axis / column grouping
+               "row"     → row grouping (alternative aggregation)
+               "measure" → the numeric Y-axis value
+
+             This specific view answers: "What is the average OKR progress
+             per team, broken down by period?"
+        ===================================================================== -->
+        <record id="okr_objective_view_graph" model="ir.ui.view">
+            <field name="name">okrmetrics.objective.graph</field>
+            <field name="model">okrmetrics.objective</field>
+            <field name="arch" type="xml">
+                <graph string="OKR Progress Analysis" type="bar">
+                    <!--
+                        team_id as row: each bar group = one department/team.
+                        period_id as col: bars within a group = one per period.
+                        progress as measure: bar height = average % completion.
+
+                        NOTE: Because progress is store=True on the model, Odoo
+                        can aggregate it via SQL GROUP BY queries in the pivot.
+                        Without store=True this chart would not work.
+                    -->
+                    <field name="team_id" type="row"/>
+                    <field name="period_id" type="col"/>
+                    <field name="progress" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- =====================================================================
+             PIVOT VIEW — Excel-style cross-tab table
+             Rows:    Teams (one row per department)
+             Columns: Periods (Q1, Q2, Q3…)
+             Cells:   Average progress % + count of objectives
+
+             The user can add/remove measures and row/col groupings interactively
+             via the pivot controls in the UI.
+        ===================================================================== -->
+        <record id="okr_objective_view_pivot" model="ir.ui.view">
+            <field name="name">okrmetrics.objective.pivot</field>
+            <field name="model">okrmetrics.objective</field>
+            <field name="arch" type="xml">
+                <pivot string="OKR Pivot Analysis">
+                    <field name="team_id" type="row"/>
+                    <field name="period_id" type="col"/>
+                    <!--
+                        string= overrides the column header label.
+                        avg operator: Odoo uses AVG() in the SQL aggregation.
+                    -->
+                    <field name="progress" type="measure" string="Avg Progress (%)"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- =====================================================================
+             KEY RESULT — GRAPH VIEW
+             Answers: "How have Key Result progress values trended over check-ins?"
+             Shows progress by owner across periods.
+        ===================================================================== -->
+        <record id="okr_key_result_view_graph" model="ir.ui.view">
+            <field name="name">okrmetrics.key_result.graph</field>
+            <field name="model">okrmetrics.key_result</field>
+            <field name="arch" type="xml">
+                <graph string="Key Result Progress" type="bar">
+                    <field name="objective_id" type="row"/>
+                    <field name="progress" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Window action for Key Results standalone list/graph -->
+        <record id="action_okrmetrics_key_result" model="ir.actions.act_window">
+            <field name="name">Key Results</field>
+            <field name="res_model">okrmetrics.key_result</field>
+            <field name="view_mode">tree,graph</field>
+        </record>
+
+        <!-- KEY RESULT — standalone TREE VIEW for the menu action -->
+        <record id="okr_key_result_view_tree" model="ir.ui.view">
+            <field name="name">okrmetrics.key_result.tree</field>
+            <field name="model">okrmetrics.key_result</field>
+            <field name="arch" type="xml">
+                <tree string="Key Results"
+                      decoration-success="confidence == '3'"
+                      decoration-warning="confidence == '2'"
+                      decoration-danger="confidence == '1'">
+                    <field name="name"/>
+                    <field name="objective_id"/>
+                    <field name="owner_id"/>
+                    <field name="start_value"/>
+                    <field name="target_value"/>
+                    <field name="current_value"/>
+                    <field name="unit"/>
+                    <field name="confidence"/>
+                    <field name="progress" widget="progressbar"/>
+                </tree>
+            </field>
+        </record>
+
+    </data>
+</odoo>

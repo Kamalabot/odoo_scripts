@@ -6,7 +6,7 @@ class OkrObjective(models.Model):
     _name = "okrmetrics.objective"
     _description = "OKR Objective"
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _order = "priority desc, id desc"
+    _order = "id desc"
 
     name = fields.Char(string="Objective Name", required=True, tracking=True)
     
@@ -44,13 +44,16 @@ class OkrObjective(models.Model):
         ('cancelled', 'Cancelled')
     ], string="Status", default="draft", tracking=True)
 
-    # Priority Widget Field
+    # Priority widget field.
+    # The widget="priority" in Odoo expects a Selection with values '0','1','2','3'.
+    # NOTE: _order cannot reliably sort on Selection string keys — use a separate
+    # integer field if ordering by priority is needed in the future.
     priority = fields.Selection([
-        ('0', 'Low'),
-        ('1', 'Medium'),
-        ('2', 'High'),
+        ('0', 'Normal'),
+        ('1', 'High'),
+        ('2', 'Very High'),
         ('3', 'Critical')
-    ], string="Priority", default='1', tracking=True)
+    ], string="Priority", default='0', tracking=True)
 
     # Progress Tracking
     key_result_ids = fields.One2many("okrmetrics.key_result", "objective_id", string="Key Results")
@@ -69,13 +72,22 @@ class OkrObjective(models.Model):
                 obj.progress = 0.0
 
     def action_activate(self):
-        self.state = 'active'
+        """Button: Draft → Active. Loops over self to support multi-record operations."""
+        for obj in self:
+            if obj.state == 'draft':
+                obj.state = 'active'
         return True
 
     def action_complete(self):
-        self.state = 'completed'
+        """Button: Active → Completed."""
+        for obj in self:
+            if obj.state == 'active':
+                obj.state = 'completed'
         return True
 
     def action_cancel(self):
-        self.state = 'cancelled'
+        """Button: Any → Cancelled (except already cancelled)."""
+        for obj in self:
+            if obj.state not in ('cancelled', 'completed'):
+                obj.state = 'cancelled'
         return True

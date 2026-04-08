@@ -6,7 +6,7 @@ I have successfully built the `okrmetrics` addon from scratch. This new addon en
 
 The module follows Odoo's standard layout and separates logic into four main models:
 
-```
+```text
 okrmetrics/
 ├── __manifest__.py                 ← Depends on base, mail, and hr
 ├── __init__.py                     
@@ -36,9 +36,11 @@ This build introduces several new features to the Odoo ecosystem:
 
 ### 1. The Chatter (`mail.thread`)
 Added easily to `# models/okr_objective.py`, the chatter enables teams to discuss OKRs directly on the record, @mention users, and track activity history.
+
 ```python
 _inherit = ['mail.thread', 'mail.activity.mixin']
 ```
+
 To show it in the UI, we just added `<div class="oe_chatter">...</div>` at the bottom of the form view.
 
 ### 2. Widget Enhancements 
@@ -59,6 +61,42 @@ In `okr_objective.py`, the `aligned_to` field can point to totally different mod
 
 ---
 
+## 🐛 Bugs Fixed & Architectural Updates
+
+During an architectural review of the initial build, a few bugs were identified and fixed to ensure stability and demonstrate best practices:
+
+### 1. Corrected `_order` on Model
+
+- **Issue**: `_order = "priority desc"` failed because `priority` is a string-based `Selection` field (lexicographically, `'3' < '10'`).
+- **Fix**: Simplified to default ID descending order (`_order = "id desc"`).
+
+### 2. Multi-record Support in Actions
+
+- **Issue**: Action methods like `action_activate` updated state using `self.state = 'active'`, which crashes when operating on multiple selected records from a tree view (`Expected singleton`).
+- **Fix**: Added `for obj in self:` loops to ensure all methods handle recordsets correctly.
+
+### 3. XML & View Fixes
+
+- **Issue**: `badge_decoration` is invalid in Odoo XML, and python formatting like `%(action_id)d` breaks buttons. Actions must also be defined *before* the views that reference them.
+- **Fix**: Switched to valid `decoration-success`/`muted` attributes, corrected action ID syntax, and reodered XML records.
+
+### 4. Security & Permissions
+
+- **Issue**: `hr.department` doesn't have a direct `member_ids` field, so the `ir.rule` would crash Odoo during installation. Also, `ir.model.access.csv` blocked `perm_unlink` (delete) entirely.
+- **Fix**: Updated domain to follow `team_id.employee_ids.user_id` and globally enabled `perm_unlink=1` in the CSV, letting `ir.rule` manage the finer-grained restrictions.
+
+---
+
+## 📊 Analytics & Reporting (Analysis Views)
+
+We added a new view file `views/okr_analysis_views.xml` to leverage Odoo's built-in reporting engine:
+
+- **Search View**: Configured custom filters like `My Objectives`, `Completed`, and interactive groupings (Group by Period, Team, Level).
+- **Graph View**: Implemented a Bar Chart aggregating progress by Team and Period. This demonstrates the power of setting `store=True` on the `progress` field, which allows PostgreSQL to natively run `AVG()` operations.
+- **Pivot View**: An interactive cross-tab (Excel-like) table analyzing objective performance dynamically.
+
+---
+
 ## 🔄 Data Execution Flow (How it runs)
 
 1. A manager creates an **OKR Period** (e.g., Q1 2024).
@@ -76,9 +114,11 @@ In `okr_objective.py`, the `aligned_to` field can point to totally different mod
 To test out these concepts on your machine:
 
 1. In your Odoo environment, update the apps list.
+
 ```sh
 odoo-bin -c odoo.conf -u okrmetrics --stop-after-init
 ```
+
 2. Navigate to the Apps menu inside Odoo, find **Team OKR Tracker**, and click **Install**.
 3. Open the **OKRs** App from the top selector:
    - Navigate to **Configuration > Periods** and make a new Period.

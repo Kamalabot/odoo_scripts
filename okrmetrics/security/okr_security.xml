@@ -1,16 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-        <!-- Standard users see Objectives they own, or where their team owns it -->
+    <data noupdate="1">
+        <!--
+            RECORD RULE: Restrict what objectives a standard user can see.
+
+            ir.rule adds a WHERE clause to every SELECT on this model for the
+            matching groups. This is Row-Level Security (RLS) at the ORM level.
+
+            FIX from original: hr.department does NOT have a direct 'member_ids'
+            relational field in Odoo stock. The correct way to check if a user
+            belongs to a department is via hr.employee:
+              hr.employee has:  department_id (Many2one → hr.department)
+                                user_id       (Many2one → res.users)
+
+            So the correct domain path using ORM dot-notation is:
+              team_id.employee_ids.user_id  (hr.department → hr.employee → res.users)
+
+            This works because hr.department has a One2many 'employee_ids' pointing
+            back from hr.employee.department_id.
+
+            Rule logic:
+              Show an objective if:
+                (a) the logged-in user is the owner, OR
+                (b) the logged-in user is an employee in the objective's team/dept
+        -->
         <record id="rule_okr_objective_user" model="ir.rule">
             <field name="name">OKR: Users see own and team objectives</field>
             <field name="model_id" ref="model_okrmetrics_objective"/>
             <field name="domain_force">
-                ['|', ('owner_id', '=', user.id), ('team_id.member_ids', 'in', [user.id])]
+                ['|',
+                    ('owner_id', '=', user.id),
+                    ('team_id.employee_ids.user_id', 'in', [user.id])
+                ]
             </field>
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
         </record>

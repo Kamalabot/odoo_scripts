@@ -1,16 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Root Menu -->
-        <menuitem id="okrmetrics_menu_root" name="OKRs" web_icon="okrmetrics,static/description/icon.png"/>
+        <!--
+            Menu structure:
+              OKRs [App Root]
+              ├── Objectives              → kanban/tree/form/graph/pivot
+              ├── Key Results             → tree/graph
+              └── Configuration
+                  └── Periods             → tree/form
 
-        <!-- Objectives Menu -->
-        <menuitem id="okrmetrics_menu_objectives" name="Objectives" parent="okrmetrics_menu_root" action="action_okrmetrics_objective" sequence="10"/>
+            action= references must point to XML IDs that are defined in the
+            view files loaded BEFORE this file in __manifest__.py data list.
+            Both action_okrmetrics_objective (in okr_objective_views.xml) and
+            action_okrmetrics_period (in okr_period_views.xml) are already loaded.
+        -->
 
-        <!-- Configuration Menu -->
-        <menuitem id="okrmetrics_menu_configuration" name="Configuration" parent="okrmetrics_menu_root" sequence="100"/>
+        <!-- Root app icon in the Odoo home screen -->
+        <menuitem id="okrmetrics_menu_root"
+                  name="OKRs"
+                  web_icon="okrmetrics,static/description/icon.png"/>
 
-        <!-- Periods Menu -->
-        <menuitem id="okrmetrics_menu_periods" name="Periods" parent="okrmetrics_menu_configuration" action="action_okrmetrics_period" sequence="10"/>
+        <!-- Objectives: the main view — opens in kanban by default -->
+        <menuitem id="okrmetrics_menu_objectives"
+                  name="Objectives"
+                  parent="okrmetrics_menu_root"
+                  action="action_okrmetrics_objective"
+                  sequence="10"/>
+
+        <!-- Key Results: standalone analytical list + graph -->
+        <menuitem id="okrmetrics_menu_key_results"
+                  name="Key Results"
+                  parent="okrmetrics_menu_root"
+                  action="action_okrmetrics_key_result"
+                  sequence="20"/>
+
+        <!-- Configuration section header (no action → just a grouping label) -->
+        <menuitem id="okrmetrics_menu_configuration"
+                  name="Configuration"
+                  parent="okrmetrics_menu_root"
+                  sequence="100"/>
+
+        <!-- Periods config sub-menu -->
+        <menuitem id="okrmetrics_menu_periods"
+                  name="Periods"
+                  parent="okrmetrics_menu_configuration"
+                  action="action_okrmetrics_period"
+                  sequence="10"/>
     </data>
 </odoo>
