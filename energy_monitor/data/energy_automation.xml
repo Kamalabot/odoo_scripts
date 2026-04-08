@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Server Action to send notification or log activity -->
+        <record id="action_energy_budget_exceeded" model="ir.actions.server">
+            <field name="name">Send Budget Alert</field>
+            <field name="model_id" ref="model_energy_reading"/>
+            <field name="state">code</field>
+            <field name="code">
+                if record.cost > record.meter_id.monthly_budget and record.meter_id.monthly_budget > 0:
+                    # Log a next activity on the meter
+                    env['mail.activity'].create({
+                        'res_name': record.meter_id.name,
+                        'res_model_id': env['ir.model']._get('energy.meter').id,
+                        'res_id': record.meter_id.id,
+                        'summary': 'Budget Exceeded Alert',
+                        'note': f"Reading {record.reading_date} has a cost of {record.cost} which exceeds the monthly budget of {record.meter_id.monthly_budget}.",
+                        'user_id': record.meter_id.department_id.manager_id.user_id.id if record.meter_id.department_id.manager_id.user_id else env.user.id,
+                        'activity_type_id': env.ref('mail.mail_activity_data_warning').id,
+                    })
+            </field>
+        </record>
+
+        <!-- Automated Action Trigger -->
+        <record id="automation_energy_budget_alert" model="base.automation">
+            <field name="name">Alert: Energy Budget Exceeded</field>
+            <field name="model_id" ref="model_energy_reading"/>
+            <field name="trigger">on_create_or_write</field>
+            <field name="action_server_ids" eval="[(6, 0, [ref('action_energy_budget_exceeded')])]"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Application Category -->
+    <record id="module_category_energy" model="ir.module.category">
+        <field name="name">Energy Management</field>
+        <field name="description">Helps you manage facility energy and utility consumption.</field>
+        <field name="sequence">15</field>
+    </record>
+
+    <!-- Energy User Group -->
+    <record id="group_energy_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="category_id" ref="module_category_energy"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">The user will have access to read meters and log readings.</field>
+    </record>
+
+    <!-- Energy Manager Group -->
+    <record id="group_energy_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="module_category_energy"/>
+        <field name="implied_ids" eval="[(4, ref('group_energy_user'))]"/>
+        <field name="comment">The manager will have full access to create meters, configure settings and manage all readings.</field>
+    </record>
+    
+    <!-- Rule: A user can only see meters of their department (Optional rule, based on default Odoo patterns, but let's keep it simple: users see all, but maybe limit modification. Actually, the idea didn't specify record rules, so we just setup standard group access) -->
+</odoo>

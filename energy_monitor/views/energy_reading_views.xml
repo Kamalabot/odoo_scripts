@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_energy_reading_tree" model="ir.ui.view">
+        <field name="name">energy.reading.tree</field>
+        <field name="model">energy.reading</field>
+        <field name="arch" type="xml">
+            <tree decoration-info="state == 'draft'" decoration-success="state == 'confirmed'" decoration-warning="state == 'disputed'">
+                <field name="meter_id"/>
+                <field name="reading_date"/>
+                <field name="month"/>
+                <field name="consumption"/>
+                <field name="cost" widget="monetary"/>
+                <field name="state" widget="badge"/>
+                <field name="currency_id" column_invisible="True"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_energy_reading_form" model="ir.ui.view">
+        <field name="name">energy.reading.form</field>
+        <field name="model">energy.reading</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,disputed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="meter_id"/>
+                            <field name="reading_date"/>
+                        </group>
+                        <group>
+                            <field name="previous_value"/>
+                            <field name="meter_value"/>
+                            <field name="consumption"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="cost" widget="monetary"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes">
+                            <field name="notes" placeholder="Enter any anomalies..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_energy_reading_graph" model="ir.ui.view">
+        <field name="name">energy.reading.graph</field>
+        <field name="model">energy.reading</field>
+        <field name="arch" type="xml">
+            <graph string="Energy Consumption" type="bar">
+                <field name="month" type="col"/>
+                <field name="meter_id" type="row"/>
+                <field name="consumption" type="measure"/>
+                <field name="cost" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_energy_reading_pivot" model="ir.ui.view">
+        <field name="name">energy.reading.pivot</field>
+        <field name="model">energy.reading</field>
+        <field name="arch" type="xml">
+            <pivot string="Consumption Analysis">
+                <field name="meter_id" type="row"/>
+                <field name="month" type="col"/>
+                <field name="consumption" type="measure"/>
+                <field name="cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_energy_reading" model="ir.actions.act_window">
+        <field name="name">Energy Readings</field>
+        <field name="res_model">energy.reading</field>
+        <field name="view_mode">tree,form,graph,pivot</field>
+    </record>
+
+    <menuitem id="menu_energy_readings_action" action="action_energy_reading" parent="menu_energy_readings" sequence="10"/>
+</odoo>

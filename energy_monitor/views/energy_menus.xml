@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Top-level menu: Facility -->
+    <menuitem id="menu_facility_root" name="Facility" sequence="50"/>
+
+    <!-- Application menu: Energy -->
+    <menuitem id="menu_energy_root" name="Energy Management" parent="menu_facility_root" sequence="10"/>
+
+    <!-- Submenus -->
+    <menuitem id="menu_energy_meters" name="Meters" parent="menu_energy_root" sequence="10"/>
+    <menuitem id="menu_energy_readings" name="Readings" parent="menu_energy_root" sequence="20"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_facility_configuration" name="Configuration" parent="menu_facility_root" sequence="100"/>
+    <menuitem id="menu_energy_settings" name="Energy Settings" parent="menu_facility_configuration" sequence="10"/>
+</odoo>

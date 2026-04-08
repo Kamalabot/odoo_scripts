@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_energy_meter_user,energy.meter.user,model_energy_meter,group_energy_user,1,0,0,0
+access_energy_reading_user,energy.reading.user,model_energy_reading,group_energy_user,1,1,1,0
+access_energy_meter_manager,energy.meter.manager,model_energy_meter,group_energy_manager,1,1,1,1
+access_energy_reading_manager,energy.reading.manager,model_energy_reading,group_energy_manager,1,1,1,1
+access_res_config_settings,res.config.settings,model_res_config_settings,base.group_system,1,1,1,1

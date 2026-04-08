@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_energy_meter_tree" model="ir.ui.view">
+        <field name="name">energy.meter.tree</field>
+        <field name="model">energy.meter</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="utility_type"/>
+                <field name="department_id"/>
+                <field name="rate" widget="monetary"/>
+                <field name="monthly_budget" widget="monetary"/>
+                <field name="currency_id" column_invisible="True"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_energy_meter_form" model="ir.ui.view">
+        <field name="name">energy.meter.form</field>
+        <field name="model">energy.meter</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Meter Name..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="ref"/>
+                            <field name="utility_type"/>
+                            <field name="unit"/>
+                        </group>
+                        <group>
+                            <field name="department_id"/>
+                            <field name="location"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="rate" widget="monetary"/>
+                            <field name="monthly_budget" widget="monetary"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_energy_meter" model="ir.actions.act_window">
+        <field name="name">Energy Meters</field>
+        <field name="res_model">energy.meter</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Energy Meter!
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_energy_meters_action" action="action_energy_meter" parent="menu_energy_meters" sequence="10"/>
+</odoo>
