@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Tree View -->
+        <record id="okr_period_view_tree" model="ir.ui.view">
+            <field name="name">okrmetrics.period.tree</field>
+            <field name="model">okrmetrics.period</field>
+            <field name="arch" type="xml">
+                <tree string="Periods" decoration-success="state=='active'">
+                    <field name="name"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="okr_period_view_form" model="ir.ui.view">
+            <field name="name">okrmetrics.period.form</field>
+            <field name="model">okrmetrics.period</field>
+            <field name="arch" type="xml">
+                <form string="Period">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="upcoming,active,closed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="e.g. Q1 2024"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="date_start"/>
+                                <field name="date_end"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Objectives">
+                                <field name="objective_ids">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="owner_id"/>
+                                        <field name="progress" widget="progressbar"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_okrmetrics_period" model="ir.actions.act_window">
+            <field name="name">Periods</field>
+            <field name="res_model">okrmetrics.period</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+</odoo>

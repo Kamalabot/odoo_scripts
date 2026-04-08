@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Standard users see Objectives they own, or where their team owns it -->
+        <record id="rule_okr_objective_user" model="ir.rule">
+            <field name="name">OKR: Users see own and team objectives</field>
+            <field name="model_id" ref="model_okrmetrics_objective"/>
+            <field name="domain_force">
+                ['|', ('owner_id', '=', user.id), ('team_id.member_ids', 'in', [user.id])]
+            </field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+    </data>
+</odoo>

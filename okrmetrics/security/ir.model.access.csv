@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_okrmetrics_period,access_okrmetrics_period,model_okrmetrics_period,base.group_user,1,1,1,0
+access_okrmetrics_objective,access_okrmetrics_objective,model_okrmetrics_objective,base.group_user,1,1,1,0
+access_okrmetrics_key_result,access_okrmetrics_key_result,model_okrmetrics_key_result,base.group_user,1,1,1,0
+access_okrmetrics_check_in,access_okrmetrics_check_in,model_okrmetrics_check_in,base.group_user,1,1,1,0

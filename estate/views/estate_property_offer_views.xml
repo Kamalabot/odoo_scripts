@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--
+            Offer — Standalone List View
+            Accessible from the Advertisements menu as "All Offers".
+            Shows offers across ALL properties.
+            DB query: SELECT * FROM estate_property_offer ORDER BY price DESC
+
+            decoration-* attributes: conditional row styling.
+            - decoration-success: green row when status = 'accepted'
+            - decoration-danger:  red row when status = 'refused'
+            Both require the 'status' field to be present in the tree (even if hidden).
+        -->
+        <record id="estate_property_offer_view_tree" model="ir.ui.view">
+            <field name="name">estate.property.offer.tree</field>
+            <field name="model">estate.property.offer</field>
+            <field name="arch" type="xml">
+                <tree string="All Offers"
+                      decoration-success="status == 'accepted'"
+                      decoration-danger="status == 'refused'">
+                    <field name="property_id"/>
+                    <field name="partner_id" string="Buyer"/>
+                    <field name="price"/>
+                    <field name="validity"/>
+                    <field name="date_deadline"/>
+                    <field name="status"/>
+                </tree>
+            </field>
+        </record>
+
+        <!--
+            Window Action for the standalone offer list.
+            Only tree mode — offers are created and acted on from inside the property form.
+        -->
+        <record id="estate_property_offer_action" model="ir.actions.act_window">
+            <field name="name">All Offers</field>
+            <field name="res_model">estate.property.offer</field>
+            <field name="view_mode">tree</field>
+        </record>
+    </data>
+</odoo>
