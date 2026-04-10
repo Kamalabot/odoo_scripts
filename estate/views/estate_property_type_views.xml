@@ -10,9 +10,9 @@
             <field name="name">estate.property.type.tree</field>
             <field name="model">estate.property.type</field>
             <field name="arch" type="xml">
-                <tree string="Property Types">
+                <form string="Property Types">
                     <field name="name"/>
-                </tree>
+                </form>
             </field>
         </record>
 

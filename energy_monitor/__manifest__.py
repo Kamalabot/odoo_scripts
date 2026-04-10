@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Smart Energy & Utility Monitor',
-    'version': '17.0.1.0.0',
+    'name': 'Utility Monitor',
+    'version': '1.0',
     'summary': 'Track utility consumption and costs per department',
     'description': """
         Smart Energy & Utility Monitor
@@ -13,8 +13,8 @@
         - View trends via Graph and Pivot views
         - Compare months / years / departments
     """,
-    'category': 'Facility',
-    'author': 'Antigravity',
+    'category': 'Tutorials/Utility Monitor',
+    'author': 'Kamal',
     'depends': ['base', 'mail', 'base_automation', 'hr'],
     'data': [
         'security/energy_security.xml',

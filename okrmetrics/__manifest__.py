@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Team OKR Tracker",
+    'name': "OKRs",
     'version': '1.0',
     'depends': ['base', 'mail', 'hr'],
-    'author': "Your Name",
-    'category': 'Human Resources/OKRs',
+    'author': "Kamal",
+    'category': 'Tutorials/OKRs',
     'description': """
         Track Objectives and Key Results (OKRs).
         Features:
