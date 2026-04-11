@@ -1,0 +1,45 @@
+baseURL = 'https://kamalabot.github.io/' # Change to your GH Pages URL
+languageCode = 'en-us'
+title = "Kamal's Exploration"
+theme = "PaperMod"
+
+# Essential for Search functionality
+[outputs]
+    home = ["HTML", "RSS", "JSON"]
+    page = ["HTML"]
+[params]
+    env = "production"
+    description = "LLMs & Open Source Research"
+    defaultTheme = "auto" # Switches based on Windows System Theme
+    ShowShareButtons = true
+    ShowReadingTime = true
+    ShowToc = true
+    ShowCodeCopyButtons = true
+    math = true	
+    [params.profileMode]
+        enabled = true
+        title = "Your Name"
+        subtitle = "LLMs and Opensource SME | Python Developer | Thinker"
+        # imageUrl = "img/avatar.png" # Place your image in /static/img/
+        
+        [[params.profileMode.buttons]]
+            name = "Posts"
+            url = "posts"
+        [[params.profileMode.buttons]]
+            name = "Search"
+            url = "search"
+
+    # Social Icons (The neat icons under the profile)
+    [[params.socialIcons]]
+        name = "github"
+        url = "https://github.com/kamalabot"
+    [[params.socialIcons]]
+        name = "linkedin"
+        url = "https://linkedin.com/in/kamalrajmm/"
+
+    # Search Logic
+    [params.fuseOpts]
+        isCaseSensitive = false
+        threshold = 0.4
+        location = 0
+        distance = 100

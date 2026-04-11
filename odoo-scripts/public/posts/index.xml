@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Posts on Kamal&#39;s Exploration</title>
+    <link>http://localhost:1313/posts/</link>
+    <description>Recent content in Posts on Kamal&#39;s Exploration</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 11 Apr 2026 15:01:17 +0530</lastBuildDate>
+    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Excel Distiller Logic</title>
+      <link>http://localhost:1313/posts/excel-distiller-logic/</link>
+      <pubDate>Sat, 11 Apr 2026 15:01:17 +0530</pubDate>
+      <guid>http://localhost:1313/posts/excel-distiller-logic/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

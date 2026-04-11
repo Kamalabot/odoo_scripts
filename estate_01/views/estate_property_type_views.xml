@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--
+            Property Type — List View
+            Shows all types in a simple sortable table.
+            DB query: SELECT id, name FROM estate_property_type ORDER BY name
+        -->
+        <record id="estate_property_type_view_tree" model="ir.ui.view">
+            <field name="name">estate.property.type.tree</field>
+            <field name="model">estate.property.type</field>
+            <field name="arch" type="xml">
+                <form string="Property Types">
+                    <field name="name"/>
+                </form>
+            </field>
+        </record>
+
+        <!--
+            Property Type — Form View
+            Shows the type name + an inline One2many list of all properties of this type.
+            This is the reverse side of the Many2one: navigating from type → all properties.
+            DB query for the inline list:
+              SELECT id, name, expected_price, state FROM estate_property
+               WHERE property_type_id = <current_type.id>
+        -->
+        <record id="estate_property_type_view_form" model="ir.ui.view">
+            <field name="name">estate.property.type.form</field>
+            <field name="model">estate.property.type</field>
+            <field name="arch" type="xml">
+                <form string="Property Type">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="e.g. Apartment, House, Land"/>
+                            </h1>
+                        </div>
+                        <notebook>
+                            <page string="Properties">
+                                <!--
+                                    One2many inline list — shows all properties of this type.
+                                    This demonstrates navigating the inverse side of a Many2one.
+                                -->
+                                <field name="property_ids">
+                                    <tree string="Properties" editable="bottom">
+                                        <field name="name"/>
+                                        <field name="expected_price"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!--
+            Window Action: opens estate.property.type in list+form mode.
+            Referenced by the Settings menu in estate_menus.xml.
+        -->
+        <record id="estate_property_type_action" model="ir.actions.act_window">
+            <field name="name">Property Types</field>
+            <field name="res_model">estate.property.type</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+</odoo>
